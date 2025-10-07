@@ -1,9 +1,6 @@
-import { type GenerationNum, type MoveName } from '@smogon/calc';
-import { env, formatId, nonEmptyObject } from '@showdex/utils/core';
+import { type MoveName } from '@smogon/calc';
+import { formatId } from '@showdex/utils/core';
 import { logger } from '@showdex/utils/debug';
-import { detectGenFromFormat } from './detectGenFromFormat';
-import { getDexForFormat } from './getDexForFormat';
-import { guessTableFormatKey } from './guessTableFormatKey';
 
 const l = logger('@showdex/utils/dex/getPokemonLearnset()');
 
@@ -27,25 +24,24 @@ export const getPokemonLearnset = (
   speciesForme: string,
   ignoreGen?: boolean,
 ): MoveName[] => {
-  if (!nonEmptyObject(BattleTeambuilderTable?.learnsets) || !format || !speciesForme) {
+  if (!window.GensTeambuilderTable || !format || !speciesForme) {
     return [];
   }
 
-  const gen = detectGenFromFormat(format, env.int<GenerationNum>('calcdex-default-gen'));
-  const dex = getDexForFormat(format);
+  const gttformat = window.GensTeambuilderTable.formats[format];
+  const gttmod = window.GensTeambuilderTable.mods[gttformat.mod];
+  const gttdex = window.Dex.mod(gttformat.mod);
 
-  // note: not all formats (like metronome) include learnsets, hence the conditional spreading below
-  const formatKey = guessTableFormatKey(format);
-
-  const learnsets = {
-    ...BattleTeambuilderTable.learnsets,
-    ...(!!formatKey && BattleTeambuilderTable[formatKey]?.learnsets),
+  const learnsets: Record<string, string> = {
+    ...window.GensTeambuilderTable.learnsets,
+    ...(!!gttmod && gttmod.learnsets),
+    ...(!!gttformat && gttformat.learnsets),
   };
 
   // find all the species (including previous evolutions) to lookup learnsets for
   // (e.g., Weavile's prevo is Sneasel, which includes moves that don't exist in Weavile's learnset like Icicle Crash)
   const speciesIdLookups: string[] = [];
-  let currentDexSpecies = dex.species.get(speciesForme);
+  let currentDexSpecies = gttdex.species.get(speciesForme);
 
   while (currentDexSpecies?.exists) {
     const {
@@ -74,7 +70,7 @@ export const getPokemonLearnset = (
     const nextSpecies = battleOnly || changesFrom || prevo;
 
     currentDexSpecies = nextSpecies
-      ? dex.species.get(nextSpecies)
+      ? gttdex.species.get(nextSpecies)
       : null;
   }
 
@@ -83,7 +79,7 @@ export const getPokemonLearnset = (
       l.warn(
         'Failed to obtain any speciesIdLookups for speciesForme', speciesForme,
         '\n', 'speciesIdLookups', speciesIdLookups,
-        '\n', 'format', format, 'gen', gen,
+        '\n', 'format', format, 'gen', gttdex.gen,
         '\n', '(You will only see this warning on development.)',
       );
     }
@@ -104,8 +100,8 @@ export const getPokemonLearnset = (
 
         // e.g., { attract: '45678pqg', auroraveil: '8g', ... }
         return Object.entries(learnsets[learnsetKey])
-          .filter(([, gens]) => ignoreGen || gens.includes(String(gen)))
-          .map(([id]) => dex.moves.get(id)?.name as MoveName)
+          .filter(([, gens]) => ignoreGen || gens.includes(String(gttdex.gen)))
+          .map(([id]) => gttdex.moves.get(id)?.name as MoveName)
           .filter(Boolean);
       }),
     ),

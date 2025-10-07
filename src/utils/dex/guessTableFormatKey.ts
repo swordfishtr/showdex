@@ -58,45 +58,7 @@ const KnownFormats: [test: RegExp, replacement: string][] = [
 export const guessTableFormatKey = (
   format: string,
 ): Showdown.BattleTeambuilderTableFormat => {
-  if (!format || !nonEmptyObject(BattleTeambuilderTable)) {
-    return null;
-  }
-
-  // first sniff out any special formats, like gen8bdsp & gen9dlc1
-  const knownFormat = KnownFormats.find(([regex]) => regex.test(format));
-
-  if (knownFormat?.length) {
-    const [regex, replacement] = knownFormat;
-    const [match] = regex.exec(format);
-    const key = match?.replace(regex, replacement) as Showdown.BattleTeambuilderTableFormat;
-
-    if (key in BattleTeambuilderTable) {
-      return key;
-    }
-  }
-
-  // current gen (e.g., 'gen9' -- at the time of writing) seems to be in the root BattleTeambuilderTable,
-  // while other gens (e.g., 'gen8') will be properties alongside the current gen;
-  // i.e., you won't find a 'gen9' BattleTeambuilderTable property, but what you'd normally find inside of it is
-  // available in the root of the BattleTeambuilderTable object itself
-  const gen = detectGenFromFormat(format);
-
-  // doubles (even of the current gen, e.g., 'gen9doubles') will always be a BattleTeambuilderTable property
-  if (format.includes('doubles')) {
-    const key = `gen${gen}doubles` as Showdown.BattleTeambuilderTableFormat;
-
-    if (key in BattleTeambuilderTable) {
-      return key;
-    }
-  }
-
-  const key = `gen${gen}` as Showdown.BattleTeambuilderTableFormat;
-
-  if (key in BattleTeambuilderTable) {
-    return key;
-  }
-
-  // at this point, the `format` might be something like `gen9ou`, so since it's the current gen, we'll return `null` as
-  // to fallback to using the root BattleTeambuilderTable properties
+  // There is completely no need for this in Generations!
+  // All formats are under `GensTeambuilderTable.formats` as their id.
   return null;
 };

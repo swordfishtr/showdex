@@ -51,7 +51,8 @@ declare namespace Showdown {
     BattleSound: BattleSound;
     BattleStatGuesser: typeof BattleStatGuesser;
     BattleStatusAnims: Record<Exclude<PokemonStatus, '???'> | 'attracted' | 'confused' | 'confusedselfhit' | 'cursed' | 'flinch' | 'focuspunch', AnimData>;
-    BattleTeambuilderTable: BattleTeambuilderTable;
+    //BattleTeambuilderTable: BattleTeambuilderTable;
+    GensTeambuilderTable: any;
     BattleText: unknown;
     BattleTextAFD: unknown;
     BattleTextNotAFD: unknown;

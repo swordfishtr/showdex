@@ -3,7 +3,7 @@ import { type DropdownOption } from '@showdex/components/form';
 import { eacute } from '@showdex/consts/core';
 import { type CalcdexPokemon, type CalcdexPokemonAlt, type CalcdexPokemonUsageAlt } from '@showdex/interfaces/calc';
 import { formatId, nonEmptyObject } from '@showdex/utils/core';
-import { detectGenFromFormat, guessTableFormatKey } from '@showdex/utils/dex';
+import { detectGenFromFormat } from '@showdex/utils/dex';
 import { percentage } from '@showdex/utils/humanize';
 import {
   type CalcdexPokemonUsageAltSorter,
@@ -25,7 +25,7 @@ export type CalcdexPokemonItemOption = DropdownOption<ItemName>;
  * @since 1.0.2
  */
 const findItemGroupIndices = (
-  items: Showdown.BattleTeambuilderGenTable['items'],
+  items: Showdown.BattleTeambuilderGenTable['items'] | Showdown.BattleTeambuilderGenTable['itemSet'],
   headerName: string,
   startsWith?: boolean,
 ): [startIndex: number, endIndex: number] => {
@@ -38,6 +38,7 @@ const findItemGroupIndices = (
 
   const determinedStartIndex = items.findIndex((value) => (
     Array.isArray(value)
+      && value[0] === 'header'
       && formatId(value[1])?.[startsWith ? 'startsWith' : 'includes'](headerId)
   ));
 
@@ -146,8 +147,10 @@ export const buildItemOptions = (
     });
   }
 
-  const formatKey = guessTableFormatKey(format);
-  const items = BattleTeambuilderTable[formatKey]?.items || BattleTeambuilderTable?.items;
+  const gttformat = window.GensTeambuilderTable.formats[format];
+  const gttmod = window.GensTeambuilderTable.mods[gttformat?.mod];
+
+  const items = gttformat?.itemSet || gttformat?.items || gttmod?.itemSet || gttmod?.items;
 
   // use the BattleTeambuilderTable to group items by:
   // Popular, Items, Pokemon-Specific, Usually Useless & Useless
@@ -160,7 +163,7 @@ export const buildItemOptions = (
   if (popularStartIndex > -1 && popularEndIndex > -1) {
     const popularItems = items
       .slice(popularStartIndex, popularEndIndex + 1)
-      .map((itemId: string) => Dex.items.get(itemId)?.name as ItemName)
+      .map((item) => window.Dex.items.get(Array.isArray(item) ? item[1] : item)?.name as ItemName)
       .filter((n) => !!n && !filterItems.includes(n))
       .sort(usageSorter);
 
@@ -181,9 +184,9 @@ export const buildItemOptions = (
   }
 
   if (itemsStartIndex > -1 && itemsEndIndex > -1) {
-    const itemsItems = items // 10/10 name lmao
+    const itemsItems = items
       .slice(itemsStartIndex, itemsEndIndex + 1)
-      .map((itemId: string) => Dex.items.get(itemId)?.name as ItemName)
+      .map((item) => window.Dex.items.get(Array.isArray(item) ? item[1] : item)?.name as ItemName)
       .filter((n) => !!n && !filterItems.includes(n))
       .sort(usageSorter);
 
@@ -206,7 +209,7 @@ export const buildItemOptions = (
   if (specificStartIndex > -1 && specificEndIndex > -1) {
     const specificItems = items
       .slice(specificStartIndex, specificEndIndex + 1)
-      .map((itemId: string) => Dex.items.get(itemId)?.name as ItemName)
+      .map((item) => window.Dex.items.get(Array.isArray(item) ? item[1] : item)?.name as ItemName)
       .filter((n) => !!n && !filterItems.includes(n))
       .sort(usageSorter);
 
@@ -229,7 +232,7 @@ export const buildItemOptions = (
   if (usuallyUselessStartIndex > -1 && usuallyUselessEndIndex > -1) {
     const usuallyUselessItems = items
       .slice(usuallyUselessStartIndex, usuallyUselessEndIndex + 1)
-      .map((itemId: string) => Dex.items.get(itemId)?.name as ItemName)
+      .map((item) => window.Dex.items.get(Array.isArray(item) ? item[1] : item)?.name as ItemName)
       .filter((n) => !!n && !filterItems.includes(n))
       .sort(usageSorter);
 
@@ -252,7 +255,7 @@ export const buildItemOptions = (
   if (uselessStartIndex > -1 && uselessEndIndex > -1) {
     const uselessItems = items
       .slice(uselessStartIndex, uselessEndIndex + 1)
-      .map((itemId: string) => Dex.items.get(itemId)?.name as ItemName)
+      .map((item) => window.Dex.items.get(Array.isArray(item) ? item[1] : item)?.name as ItemName)
       .filter((n) => !!n && !filterItems.includes(n))
       .sort(usageSorter);
 
@@ -273,7 +276,7 @@ export const buildItemOptions = (
   }
 
   if (!nonEmptyObject(items)) {
-    const allItems = Object.values(BattleItems || {})
+    const allItems = Object.values(window.BattleItems || {})
       .map((item) => item?.name as ItemName)
       .filter((n) => !!n && !filterItems.includes(n))
       .sort(usageSorter);
@@ -294,7 +297,7 @@ export const buildItemOptions = (
     }
   }
 
-  const otherItems = Object.values(BattleItems || {})
+  const otherItems = Object.values(window.BattleItems || {})
     .map((item) => item?.name as ItemName)
     .filter((n) => !!n && !filterItems.includes(n))
     .sort(usageSorter);
