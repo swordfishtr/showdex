@@ -34,8 +34,8 @@ export const buildFormeOptions = (
   // Generations doesn't keep track of Smogon tiers, and likewise for usage stats currently.
   // So this part doesn't need to be complicated. We'll show every forme.
 
-  const gttformat = window.GensTeambuilderTable.formats[format];
-  const gttdex = window.Dex.mod(gttformat?.mod);
+  const gttformat = window.GensTeambuilderTable.formats[format] ?? window.GensTeambuilderTable.formats['gen9nationaldexag'];
+  const gttdex = window.Dex.mod(gttformat.mod);
 
   if(!gttdex) {
     return options;

@@ -28,7 +28,7 @@ export const getPokemonLearnset = (
     return [];
   }
 
-  const gttformat = window.GensTeambuilderTable.formats[format];
+  const gttformat = window.GensTeambuilderTable.formats[format] ?? window.GensTeambuilderTable.formats['gen9nationaldexag'];
   const gttmod = window.GensTeambuilderTable.mods[gttformat.mod];
   const gttdex = window.Dex.mod(gttformat.mod);
 

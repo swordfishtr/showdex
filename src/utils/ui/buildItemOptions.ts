@@ -147,10 +147,10 @@ export const buildItemOptions = (
     });
   }
 
-  const gttformat = window.GensTeambuilderTable.formats[format];
-  const gttmod = window.GensTeambuilderTable.mods[gttformat?.mod];
+  const gttformat = window.GensTeambuilderTable.formats[format] ?? window.GensTeambuilderTable.formats['gen9nationaldexag'];
+  const gttmod = window.GensTeambuilderTable.mods[gttformat.mod];
 
-  const items = gttformat?.itemSet || gttformat?.items || gttmod?.itemSet || gttmod?.items;
+  const items = gttformat.itemSet || gttformat.items || gttmod.itemSet || gttmod.items;
 
   // use the BattleTeambuilderTable to group items by:
   // Popular, Items, Pokemon-Specific, Usually Useless & Useless
