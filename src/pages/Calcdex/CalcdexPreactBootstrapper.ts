@@ -226,14 +226,12 @@ export class CalcdexPreactBootstrapper extends MixinCalcdexBootstrappable(Bootde
         'Swapping the Showdown.BattlePanel for the CalcdexPreactBattlePanel',
         'by adding it to the PS.roomTypes...',
       );
-
       window.PS.addRoomType(CalcdexPreactBattlePanel);
 
       l.debug(
         'Swapping the Showdown.BattleForfeitPanel for the CalcdexPreactBattleForfeitPanel',
         'by adding it to the PS.roomTypes...',
       );
-
       window.PS.addRoomType(CalcdexPreactBattleForfeitPanel);
 
       // this panel is for 'panel' renderMode's (lol)
@@ -242,31 +240,13 @@ export class CalcdexPreactBootstrapper extends MixinCalcdexBootstrappable(Bootde
 
       // rejoin any Showdown.BattleRoom's that we were in before this bootstrapped
       // (typically occurs when the user refreshes the page mid-battle, so we join the BattleRoom first)
-      // (note: this is a lil jank & can leave the battle in some corrupted half-init state;
-      // refreshing again seems to do trick LOL inb4 I break Showdown again)
       const existingBattleRooms = (Object.keys(window.PS.rooms) as Showdown.RoomID[])
         .filter((roomId) => roomId.startsWith('battle-'));
 
       l.debug('Reloading any existing Showdown.BattleRoom\'s...', existingBattleRooms);
-
-      // note: we're only *visually* leaving the original Showdown.BattleRoom since calling PS.leave()
-      // will also do more stuff like calling destroy() n stuff, hence this bit lol
       existingBattleRooms.forEach((roomId) => {
-        const leftRoomIndex = window.PS.leftRoomList.indexOf(roomId);
-
-        if (leftRoomIndex > -1) {
-          window.PS.leftRoomList.splice(leftRoomIndex, 1);
-        }
-
-        const rightRoomIndex = window.PS.rightRoomList.indexOf(roomId);
-
-        if (rightRoomIndex > -1) {
-          window.PS.rightRoomList.splice(rightRoomIndex, 1);
-        }
-
-        delete window.PS.rooms[roomId];
-        // window.PS.update(); // no need for this actually
-        window.PS.join(roomId);
+        window.PS.leave(roomId);
+        window.PS.join(roomId).update(['-hint', 'Reloaded this battle room to initialize Showdex']);
       });
 
       l.debug(

@@ -212,14 +212,14 @@ declare namespace Showdown {
     public closePopup(skipUpdate?: boolean): void;
     public closeAllPopups(): void;
     public closePopupsAbove(room?: PSRoom, skipUpdate?: boolean): void;
-    /** Focus a room, creating it if it doesn't already exist. */
+    /** Focus a room, creating it if it doesn't already exist. Return type is Gens-exclusive. */
     public join(
       roomid: RoomID,
       options?: Partial<Omit<RoomOptions, 'id'> & {
         autoclosePopups?: boolean;
         autofocus?: boolean;
       }>,
-    ): void;
+    ): PSRoom | null;
     public leave(roomid: RoomID): void;
     public updateAutojoin(): void;
     public requestNotifications(): void;
