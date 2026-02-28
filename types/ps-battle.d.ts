@@ -41,7 +41,8 @@ declare namespace Showdown {
     public declare challengeMenuOpen: false;
     public declare challengingFormat: null;
     public declare challengedFormat: null;
-    public override battle: Battle;
+    // Is null for a brief period after joining.
+    // public override battle: Battle;
     /** `null` if a spectator, otherwise the current player's info. */
     public side?: BattleRequestSideInfo = null;
     public request?: BattleRequest = null;

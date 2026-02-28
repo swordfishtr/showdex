@@ -41,7 +41,7 @@ const findNamedIndex = (
 export class CalcdexPreactBattleRoom extends PSBattleRoom {
   public static readonly scope = l.scope;
 
-  public declare battle: CalcdexPreactBattle;
+  public declare battle?: CalcdexPreactBattle;
 
   /** Populated by the `CalcdexPreactBootstrapper`'s `patchCalcdexIdentifier()` & invoked by the `CalcdexPreactBattlePanel`. */
   public calcdexServerIdPatcher?: CalcdexBootstrappable['patchServerCalcdexIdentifier'] = null;
@@ -72,7 +72,7 @@ export class CalcdexPreactBattleRoom extends PSBattleRoom {
 
           Adapter.store.dispatch(calcdexSlice.actions.update({
             scope: `${l.scope}:CalcdexPreactBattleRoom:clientCommands.calcdex()`,
-            battleId: this.battle.id,
+            battleId: this.battle?.id,
             overlayVisible: !this.calcdexState?.overlayVisible,
           }));
 
@@ -118,19 +118,19 @@ export class CalcdexPreactBattleRoom extends PSBattleRoom {
     }
 
     l.debug(
-      'destroy()', 'called for the CalcdexPreactBattleRoom of', this.battle.id,
+      'destroy()', 'called for the CalcdexPreactBattleRoom of', this.battle?.id,
       '\n', 'room', this.id, this,
       '\n', 'battle', this.battle,
       '\n', 'state', this.calcdexState,
       '\n', 'settings', this.calcdexSettings,
     );
 
-    if (this.battle.calcdexInit) {
-      if (this.calcdexSettings?.closeOn === 'battle-tab' && this.battle.calcdexRoom?.id) {
-        window.PS.leave(this.battle.calcdexRoomId); // -> CalcdexPreactRoom:destroy()
+    if (this.battle?.calcdexInit) {
+      if (this.calcdexSettings?.closeOn === 'battle-tab' && this.battle?.calcdexRoom?.id) {
+        window.PS.leave(this.battle?.calcdexRoomId); // -> CalcdexPreactRoom:destroy()
       }
 
-      this.battle.destroy(false);
+      this.battle?.destroy(false);
     }
 
     super.destroy();
