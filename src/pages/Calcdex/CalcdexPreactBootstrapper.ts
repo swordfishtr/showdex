@@ -244,21 +244,29 @@ export class CalcdexPreactBootstrapper extends MixinCalcdexBootstrappable(Bootde
         .filter((room) => room.id.startsWith('battle-'));
 
       l.debug('Reloading any existing Showdown.BattleRoom\'s...', existingBattleRooms);
-      existingBattleRooms.forEach((room) => {
-        const { id } = room;
-        room.destroy();
-        room.onDeinit = () => {
-          const room2 = window.PS.addRoom({
-						id,
-						type: 'battle',
-						autofocus: true,
-						autoclosePopups: false,
-					});
-          room2.onInit = () => {
-            room2.update(['-hint', 'Reloaded this battle room to initialize Showdex']);
+      if ('debug' in window.PS) {
+        existingBattleRooms.forEach((room) => {
+          const { id } = room;
+          room.destroy();
+          room.onDeinit = () => {
+            const room2 = window.PS.addRoom({
+              id,
+              type: 'battle',
+              autofocus: true,
+              autoclosePopups: false,
+            });
+            room2.onInit = () => {
+              room2.update(['-hint', 'Reloaded this battle room to initialize Showdex']);
+            };
           };
-        };
-      });
+        });
+      }
+      else {
+        existingBattleRooms.forEach(({ id }) => {
+          window.PS.leave(id);
+          window.PS.join(id);
+        });
+      }
 
       l.debug(
         'Bootstrapped the Calcdex Preact pre-bootstrap!',
