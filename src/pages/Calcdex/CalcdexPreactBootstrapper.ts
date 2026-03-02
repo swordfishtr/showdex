@@ -246,7 +246,7 @@ export class CalcdexPreactBootstrapper extends MixinCalcdexBootstrappable(Bootde
       l.debug('Reloading any existing Showdown.BattleRoom\'s...', existingBattleRooms);
       existingBattleRooms.forEach((room) => {
         const { id } = room;
-        window.PS.removeRoom(room);
+        room.destroy();
         room.onDeinit = () => {
           const room2 = window.PS.addRoom({
 						id,
