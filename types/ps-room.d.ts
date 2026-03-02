@@ -213,6 +213,9 @@ declare namespace Showdown {
     public send(message?: string, element?: HTMLElement): void;
     public sendDirect(message: string): void;
     public destroy(): void;
+
+    public onInit?: () => void;
+    public onDeinit?: () => void;
   }
 
   class PlaceholderRoom extends PSRoom {

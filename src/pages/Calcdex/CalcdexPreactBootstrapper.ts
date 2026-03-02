@@ -240,13 +240,24 @@ export class CalcdexPreactBootstrapper extends MixinCalcdexBootstrappable(Bootde
 
       // rejoin any Showdown.BattleRoom's that we were in before this bootstrapped
       // (typically occurs when the user refreshes the page mid-battle, so we join the BattleRoom first)
-      const existingBattleRooms = (Object.keys(window.PS.rooms) as Showdown.RoomID[])
-        .filter((roomId) => roomId.startsWith('battle-'));
+      const existingBattleRooms = (Object.values(window.PS.rooms))
+        .filter((room) => room.id.startsWith('battle-'));
 
       l.debug('Reloading any existing Showdown.BattleRoom\'s...', existingBattleRooms);
-      existingBattleRooms.forEach((roomId) => {
-        window.PS.leave(roomId);
-        window.PS.join(roomId)?.update(['-hint', 'Reloaded this battle room to initialize Showdex']);
+      existingBattleRooms.forEach((room) => {
+        const { id } = room;
+        room.destroy();
+        room.onDeinit = () => {
+          const room2 = window.PS.addRoom({
+						id,
+						type: 'battle',
+						autofocus: true,
+						autoclosePopups: false,
+					});
+          room2.onInit = () => {
+            room2.update(['-hint', 'Reloaded this battle room to initialize Showdex']);
+          };
+        };
       });
 
       l.debug(
