@@ -1230,7 +1230,7 @@ export const syncBattle = createAsyncThunk<CalcdexBattleState, SyncBattlePayload
           p.active
             && PokemonBoosterAbilities.includes(p.dirtyAbility || p.ability)
             && p.dirtyItem === 'Booster Energy' as ItemName
-            && !Object.keys(p.volatiles).some((k) => k.startsWith(formatId(p.dirtyAbility || p.ability)))
+            && !Object.keys(p.volatiles).some((k) => k?.startsWith(formatId(p.dirtyAbility || p.ability)))
             && (
               (p.dirtyAbility || p.ability) !== 'Protosynthesis' as AbilityName
                 || syncedField.weather !== 'Sun' as Weather
