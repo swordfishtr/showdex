@@ -17,8 +17,7 @@ declare namespace Showdown {
     public readonly spritenum: number;
     public readonly desc: string;
     public readonly shortDesc: string;
-    public readonly megaStone: string;
-    public readonly megaEvolves: string;
+    public readonly megaStone?: Record<string, string>;
     public readonly zMove?: string | true;
     public readonly zMoveType: TypeName | '';
     public readonly zMoveFrom: string;

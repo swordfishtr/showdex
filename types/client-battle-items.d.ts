@@ -16,7 +16,7 @@ declare namespace Showdown {
     spritenum: number;
 
     forcedForme?: string;
-    megaStone?: string;
+    megaStone?: Record<string, string>;
     megaEvolves?: string;
     zMove?: boolean;
     zMoveType?: TypeName;
